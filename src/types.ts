@@ -12,6 +12,11 @@ export interface BriefData {
   technicalApproach: string;
   taskDraft: string;
   stakeholderReply: string;
+  confidenceScore: number;
+  missingInfo: string[];
+  mermaidDiagram: string;
 }
 
 export type GenerationMode = 'internal' | 'stakeholder' | 'mvp';
+export type GenerationPersona = 'CEO' | 'CTO' | 'PM';
+export type Theme = 'light' | 'dark';

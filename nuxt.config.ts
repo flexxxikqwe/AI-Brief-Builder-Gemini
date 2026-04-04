@@ -16,7 +16,10 @@ export default defineNuxtConfig({
     // НЕ используем process.env здесь — это работает только во время билда
     geminiApiKey: '',
     public: {
-      apiBase: '/api'
+      apiBase: '/api',
+      geminiApiKey: process.env.NUXT_PUBLIC_GEMINI_API_KEY || 
+                    process.env.GEMINI_API_KEY || 
+                    ''
     }
   },
 })

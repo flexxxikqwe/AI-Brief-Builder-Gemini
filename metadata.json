@@ -1,5 +1,5 @@
 {
-  "name": "TaskFlow - Nuxt 3 Task Manager",
-  "description": "A polished full-stack task management application built with Nuxt 3, Pinia, Tailwind CSS, and Express. Features include JWT authentication, real-time filtering, sorting, and a clean, responsive UI.",
+  "name": "AI Brief Builder",
+  "description": "A production-ready MVP for turning raw business ideas into structured product briefs using Gemini AI. Features include secure AI generation, Mermaid diagram visualization, and Markdown export.",
   "requestFramePermissions": []
 }

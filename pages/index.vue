@@ -1,216 +1,284 @@
 <template>
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
-      <div>
-        <h2 class="text-2xl font-bold text-gray-900">Your Tasks</h2>
-        <p class="text-sm text-gray-500">Manage and track your daily activities</p>
-      </div>
-      <button 
-        @click="isCreateModalOpen = true"
-        class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all"
-      >
-        <Plus class="w-4 h-4 mr-2" />
-        New Task
-      </button>
-    </div>
-
-    <!-- Filters and Search -->
-    <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 mb-6 flex flex-col md:flex-row gap-4 items-center">
-      <div class="relative flex-grow w-full md:w-auto">
-        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-          <Search class="h-4 w-4 text-gray-400" />
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <!-- LEFT COLUMN: Form -->
+      <div class="space-y-8">
+        <div class="space-y-2">
+          <h1 class="text-3xl font-bold text-gray-900 tracking-tight">AI Brief Builder</h1>
+          <p class="text-gray-500">Turn a raw idea into a full product spec in seconds</p>
         </div>
-        <input
-          v-model="taskStore.searchQuery"
-          type="text"
-          placeholder="Search tasks..."
-          class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
-        />
-      </div>
-      
-      <div class="flex items-center gap-2 w-full md:w-auto">
-        <Filter class="h-4 w-4 text-gray-400" />
-        <select 
-          v-model="taskStore.filterStatus"
-          class="block w-full md:w-auto pl-3 pr-10 py-2 text-sm border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 rounded-lg transition-all"
-        >
-          <option value="all">All Status</option>
-          <option value="todo">To Do</option>
-          <option value="in-progress">In Progress</option>
-          <option value="done">Done</option>
-        </select>
-      </div>
 
-      <div class="flex items-center gap-2 w-full md:w-auto">
-        <ArrowUpDown class="h-4 w-4 text-gray-400" />
-        <select 
-          v-model="taskStore.sortBy"
-          class="block w-full md:w-auto pl-3 pr-10 py-2 text-sm border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 rounded-lg transition-all"
-        >
-          <option value="createdAt">Date Created</option>
-          <option value="title">Title</option>
-          <option value="priority">Priority</option>
-        </select>
-      </div>
-    </div>
-
-    <!-- Task List -->
-    <div v-if="taskStore.loading" class="flex flex-col items-center justify-center py-20">
-      <Loader2 class="w-10 h-10 text-indigo-600 animate-spin mb-4" />
-      <p class="text-gray-500 font-medium">Loading tasks...</p>
-    </div>
-
-    <div v-else-if="taskStore.filteredTasks.length === 0" class="bg-white rounded-2xl border-2 border-dashed border-gray-200 py-20 text-center">
-      <div class="mx-auto h-16 w-16 bg-gray-50 rounded-full flex items-center justify-center mb-4">
-        <ClipboardList class="h-8 w-8 text-gray-400" />
-      </div>
-      <h3 class="text-lg font-medium text-gray-900">No tasks found</h3>
-      <p class="text-gray-500 mt-1">Try adjusting your filters or create a new task.</p>
-      <button 
-        @click="isCreateModalOpen = true"
-        class="mt-6 inline-flex items-center px-4 py-2 text-sm font-medium text-indigo-600 hover:text-indigo-500"
-      >
-        <Plus class="w-4 h-4 mr-1" />
-        Create your first task
-      </button>
-    </div>
-
-    <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      <div 
-        v-for="task in taskStore.filteredTasks" 
-        :key="task.id"
-        class="bg-white rounded-xl shadow-sm border border-gray-100 p-5 hover:shadow-md transition-all group relative"
-      >
-        <div class="flex justify-between items-start mb-3">
-          <span 
-            :class="[
-              'px-2.5 py-0.5 rounded-full text-xs font-semibold uppercase tracking-wider',
-              statusClasses[task.status as keyof typeof statusClasses]
-            ]"
-          >
-            {{ task.status.replace('-', ' ') }}
-          </span>
-          <div class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-            <button 
-              @click="editTask(task)"
-              class="p-1.5 text-gray-400 hover:text-indigo-600 rounded-md hover:bg-indigo-50 transition-colors"
-              title="Edit Task"
-            >
-              <Pencil class="w-4 h-4" />
-            </button>
-            <button 
-              @click="confirmDelete(task.id)"
-              class="p-1.5 text-gray-400 hover:text-red-600 rounded-md hover:bg-red-50 transition-colors"
-              title="Delete Task"
-            >
-              <Trash2 class="w-4 h-4" />
-            </button>
+        <form @submit.prevent="handleGenerate" class="space-y-6 bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+          <div class="space-y-2">
+            <label for="rawInput" class="block text-sm font-medium text-gray-700">Your idea</label>
+            <textarea
+              id="rawInput"
+              v-model="form.rawInput"
+              placeholder="Describe what you want to build — the messier the better"
+              class="w-full min-h-[160px] p-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-violet-500 focus:border-transparent transition-all resize-none overflow-hidden"
+              @input="autoResize"
+              @keydown.enter.meta="handleGenerate"
+              @keydown.enter.ctrl="handleGenerate"
+              required
+            ></textarea>
           </div>
-        </div>
-        
-        <h3 class="text-lg font-bold text-gray-900 mb-2 line-clamp-1">{{ task.title }}</h3>
-        <p class="text-sm text-gray-600 mb-4 line-clamp-2 h-10">{{ task.description }}</p>
-        
-        <div class="flex items-center justify-between pt-4 border-t border-gray-50">
-          <div class="flex items-center gap-2">
-            <div 
-              :class="[
-                'w-2 h-2 rounded-full',
-                priorityColors[task.priority as keyof typeof priorityColors]
-              ]"
-            ></div>
-            <span class="text-xs font-medium text-gray-500 capitalize">{{ task.priority }} Priority</span>
-          </div>
-          <ClientOnly>
-            <span class="text-[10px] text-gray-400 font-mono">
-              {{ new Date(task.createdAt).toLocaleDateString() }}
-            </span>
-          </ClientOnly>
-        </div>
-      </div>
-    </div>
 
-    <!-- Task Modal (Create/Edit) -->
-    <div v-if="isModalOpen" class="fixed inset-0 z-50 overflow-y-auto">
-      <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
-        <div class="fixed inset-0 transition-opacity" aria-hidden="true" @click="closeModal">
-          <div class="absolute inset-0 bg-gray-500 opacity-75"></div>
-        </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="space-y-2">
+              <label for="mode" class="block text-sm font-medium text-gray-700">Mode</label>
+              <select
+                id="mode"
+                v-model="form.mode"
+                class="w-full p-2.5 border border-gray-200 rounded-lg focus:ring-2 focus:ring-violet-500 focus:border-transparent transition-all"
+              >
+                <option value="internal">Internal</option>
+                <option value="stakeholder">Stakeholder</option>
+                <option value="mvp">MVP</option>
+              </select>
+            </div>
 
-        <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
-
-        <div class="inline-block align-bottom bg-white rounded-2xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
-          <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-            <div class="sm:flex sm:items-start">
-              <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
-                <h3 class="text-xl leading-6 font-bold text-gray-900 mb-6">
-                  {{ editingTask ? 'Edit Task' : 'Create New Task' }}
-                </h3>
-                
-                <form @submit.prevent="saveTask" class="space-y-4">
-                  <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Title</label>
-                    <input 
-                      v-model="taskForm.title"
-                      type="text"
-                      required
-                      class="block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                      placeholder="Task title"
-                    />
-                  </div>
-                  
-                  <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Description</label>
-                    <textarea 
-                      v-model="taskForm.description"
-                      rows="3"
-                      class="block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                      placeholder="Task description"
-                    ></textarea>
-                  </div>
-
-                  <div class="grid grid-cols-2 gap-4">
-                    <div>
-                      <label class="block text-sm font-medium text-gray-700 mb-1">Status</label>
-                      <select 
-                        v-model="taskForm.status"
-                        class="block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                      >
-                        <option value="todo">To Do</option>
-                        <option value="in-progress">In Progress</option>
-                        <option value="done">Done</option>
-                      </select>
-                    </div>
-                    <div>
-                      <label class="block text-sm font-medium text-gray-700 mb-1">Priority</label>
-                      <select 
-                        v-model="taskForm.priority"
-                        class="block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                      >
-                        <option value="low">Low</option>
-                        <option value="medium">Medium</option>
-                        <option value="high">High</option>
-                      </select>
-                    </div>
-                  </div>
-                </form>
-              </div>
+            <div class="space-y-2">
+              <label for="persona" class="block text-sm font-medium text-gray-700">Persona</label>
+              <select
+                id="persona"
+                v-model="form.persona"
+                class="w-full p-2.5 border border-gray-200 rounded-lg focus:ring-2 focus:ring-violet-500 focus:border-transparent transition-all"
+              >
+                <option value="CEO">CEO</option>
+                <option value="CTO">CTO</option>
+                <option value="PM">PM</option>
+              </select>
             </div>
           </div>
-          <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse gap-2">
-            <button 
-              type="button" 
-              @click="saveTask"
-              class="w-full inline-flex justify-center rounded-lg border border-transparent shadow-sm px-4 py-2 bg-indigo-600 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:ml-3 sm:w-auto sm:text-sm transition-all"
+
+          <div class="flex items-center gap-2">
+            <input
+              id="compressToMvp"
+              v-model="form.compressToMvp"
+              type="checkbox"
+              class="w-4 h-4 text-violet-600 border-gray-300 rounded focus:ring-violet-500"
+            />
+            <label for="compressToMvp" class="text-sm text-gray-700">Compress to MVP scope</label>
+          </div>
+
+          <div class="space-y-4">
+            <button
+              type="submit"
+              :disabled="loading"
+              class="w-full flex items-center justify-center gap-2 py-3 px-4 bg-violet-600 hover:bg-violet-700 text-white font-semibold rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-md hover:shadow-lg"
             >
-              {{ editingTask ? 'Update' : 'Create' }}
+              <template v-if="loading">
+                <Loader2 class="w-5 h-5 animate-spin" />
+                <span>Generating...</span>
+              </template>
+              <template v-else>
+                <Sparkles class="w-5 h-5" />
+                <span>Generate Brief</span>
+              </template>
+            </button>
+
+            <div v-if="error" class="bg-red-50 border-l-4 border-red-400 p-4 rounded-lg flex items-start justify-between">
+              <div class="flex items-center gap-2 text-red-700">
+                <AlertCircle class="w-5 h-5 flex-shrink-0" />
+                <span class="text-sm">{{ error }}</span>
+              </div>
+              <button @click="clearError" class="text-red-400 hover:text-red-500">
+                <X class="w-5 h-5" />
+              </button>
+            </div>
+          </div>
+        </form>
+
+        <!-- History -->
+        <div v-if="history.length > 0" class="space-y-4">
+          <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wider">Recent</h3>
+          <div class="flex overflow-x-auto gap-4 pb-4 scrollbar-hide">
+            <button
+              v-for="(item, index) in history"
+              :key="index"
+              @click="restoreFromHistory(index)"
+              class="flex-shrink-0 w-64 p-4 bg-white border border-gray-100 rounded-xl shadow-sm hover:shadow-md hover:border-violet-200 transition-all text-left space-y-2"
+            >
+              <p class="text-sm font-bold text-gray-900 line-clamp-2">{{ item.summary }}</p>
+              <div class="flex items-center gap-2">
+                <span class="text-[10px] px-1.5 py-0.5 bg-gray-100 text-gray-500 rounded uppercase font-bold">{{ item.mode }}</span>
+                <span class="text-[10px] px-1.5 py-0.5 bg-violet-50 text-violet-600 rounded uppercase font-bold">{{ item.persona }}</span>
+              </div>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT COLUMN: Result -->
+      <div class="min-h-[600px]">
+        <!-- Empty State -->
+        <div v-if="!result && !loading" class="h-full flex flex-col items-center justify-center text-center space-y-4 bg-gray-50/50 rounded-3xl border-2 border-dashed border-gray-200 p-12">
+          <div class="w-16 h-16 bg-white rounded-2xl shadow-sm flex items-center justify-center">
+            <Sparkles class="w-8 h-8 text-gray-300" />
+          </div>
+          <div class="space-y-2">
+            <h3 class="text-xl font-bold text-gray-900">Your brief will appear here</h3>
+            <p class="text-gray-500 max-w-xs mx-auto">The AI will generate goals, MVP scope, risks, tech approach and user flow</p>
+          </div>
+        </div>
+
+        <!-- Loading State -->
+        <div v-else-if="loading" class="h-full bg-white rounded-3xl border border-gray-100 p-8 shadow-sm space-y-8 animate-pulse">
+          <div class="h-8 w-3/4 bg-gray-100 rounded-lg"></div>
+          <div class="space-y-3">
+            <div class="h-4 w-full bg-gray-100 rounded"></div>
+            <div class="h-4 w-[85%] bg-gray-100 rounded"></div>
+            <div class="h-4 w-[60%] bg-gray-100 rounded"></div>
+          </div>
+          <div class="grid grid-cols-2 gap-8">
+            <div class="space-y-3">
+              <div class="h-4 w-full bg-gray-100 rounded"></div>
+              <div class="h-4 w-full bg-gray-100 rounded"></div>
+              <div class="h-4 w-full bg-gray-100 rounded"></div>
+            </div>
+            <div class="space-y-3">
+              <div class="h-4 w-full bg-gray-100 rounded"></div>
+              <div class="h-4 w-full bg-gray-100 rounded"></div>
+              <div class="h-4 w-full bg-gray-100 rounded"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Result State -->
+        <div v-else-if="result" class="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden">
+          <div class="p-8 space-y-8">
+            <!-- Header -->
+            <div class="flex items-start justify-between gap-4">
+              <h2 class="text-2xl font-bold text-violet-600 leading-tight">{{ result.summary }}</h2>
+              <div 
+                class="flex-shrink-0 px-3 py-1 rounded-full text-sm font-bold"
+                :class="result.confidenceScore >= 7 ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'"
+              >
+                {{ result.confidenceScore }}/10
+              </div>
+            </div>
+
+            <hr class="border-gray-100" />
+
+            <!-- Core Info -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div class="space-y-1">
+                <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">Problem</p>
+                <p class="text-sm text-gray-700">{{ result.businessProblem }}</p>
+              </div>
+              <div class="space-y-1">
+                <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">Goal</p>
+                <p class="text-sm text-gray-700">{{ result.goal }}</p>
+              </div>
+              <div class="space-y-1">
+                <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">Target User</p>
+                <p class="text-sm text-gray-700">{{ result.targetUser }}</p>
+              </div>
+            </div>
+
+            <!-- Solution -->
+            <div class="space-y-2">
+              <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">Proposed Solution</p>
+              <p class="text-sm text-gray-700 leading-relaxed">{{ result.proposedSolution }}</p>
+            </div>
+
+            <!-- Scope -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <div class="space-y-3">
+                <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">MVP Scope</p>
+                <ul class="space-y-2">
+                  <li v-for="item in result.mvpScope" :key="item" class="flex items-start gap-2 text-sm text-gray-700">
+                    <CheckCircle2 class="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
+                    <span>{{ item }}</span>
+                  </li>
+                </ul>
+              </div>
+              <div class="space-y-3">
+                <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">Out of Scope</p>
+                <ul class="space-y-2">
+                  <li v-for="item in result.outOfScope" :key="item" class="flex items-start gap-2 text-sm text-gray-700">
+                    <XCircle class="w-4 h-4 text-red-400 mt-0.5 flex-shrink-0" />
+                    <span>{{ item }}</span>
+                  </li>
+                </ul>
+              </div>
+            </div>
+
+            <!-- Risks & Assumptions -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <div class="space-y-3">
+                <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">Risks</p>
+                <ul class="space-y-2">
+                  <li v-for="item in result.risks" :key="item" class="flex items-start gap-2 text-sm text-gray-700">
+                    <AlertTriangle class="w-4 h-4 text-amber-500 mt-0.5 flex-shrink-0" />
+                    <span>{{ item }}</span>
+                  </li>
+                </ul>
+              </div>
+              <div class="space-y-3">
+                <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">Assumptions</p>
+                <ul class="space-y-2">
+                  <li v-for="item in result.assumptions" :key="item" class="flex items-start gap-2 text-sm text-gray-700">
+                    <Info class="w-4 h-4 text-blue-400 mt-0.5 flex-shrink-0" />
+                    <span>{{ item }}</span>
+                  </li>
+                </ul>
+              </div>
+            </div>
+
+            <!-- Tech Approach -->
+            <div class="space-y-2">
+              <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">Technical Approach</p>
+              <p class="text-sm text-gray-700 leading-relaxed">{{ result.technicalApproach }}</p>
+            </div>
+
+            <!-- User Flow -->
+            <div class="space-y-4">
+              <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">User Flow</p>
+              <MermaidDiagram :diagram="result.mermaidDiagram" />
+            </div>
+
+            <!-- Accordions -->
+            <div class="space-y-4">
+              <details class="group border border-gray-100 rounded-xl overflow-hidden">
+                <summary class="flex items-center justify-between p-4 cursor-pointer hover:bg-gray-50 transition-all">
+                  <span class="text-sm font-bold text-gray-700">Clarifying Questions</span>
+                  <ChevronDown class="w-4 h-4 text-gray-400 group-open:rotate-180 transition-transform" />
+                </summary>
+                <div class="p-4 pt-0">
+                  <ul class="space-y-2">
+                    <li v-for="item in result.clarifyingQuestions" :key="item" class="text-sm text-gray-600 list-disc ml-4">{{ item }}</li>
+                  </ul>
+                </div>
+              </details>
+
+              <details class="group border border-gray-100 rounded-xl overflow-hidden">
+                <summary class="flex items-center justify-between p-4 cursor-pointer hover:bg-gray-50 transition-all">
+                  <span class="text-sm font-bold text-gray-700">Stakeholder Reply</span>
+                  <ChevronDown class="w-4 h-4 text-gray-400 group-open:rotate-180 transition-transform" />
+                </summary>
+                <div class="p-4 pt-0">
+                  <p class="text-sm text-gray-600 italic">{{ result.stakeholderReply }}</p>
+                </div>
+              </details>
+            </div>
+          </div>
+
+          <!-- Footer -->
+          <div class="p-6 bg-gray-50 border-t border-gray-100 flex items-center justify-between gap-4">
+            <button 
+              @click="exportMarkdown"
+              class="flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 rounded-lg text-sm font-semibold text-gray-700 hover:bg-gray-50 transition-all shadow-sm"
+            >
+              <Download class="w-4 h-4" />
+              <span>Export .md</span>
             </button>
             <button 
-              type="button" 
-              @click="closeModal"
-              class="mt-3 w-full inline-flex justify-center rounded-lg border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm transition-all"
+              @click="reset"
+              class="flex items-center gap-2 px-4 py-2 bg-violet-600 text-white rounded-lg text-sm font-semibold hover:bg-violet-700 transition-all shadow-sm"
             >
-              Cancel
+              <RefreshCw class="w-4 h-4" />
+              <span>Generate Again</span>
             </button>
           </div>
         </div>
@@ -220,86 +288,124 @@
 </template>
 
 <script setup lang="ts">
+import { reactive, onMounted } from 'vue'
 import { 
-  Plus, Search, Filter, ArrowUpDown, ClipboardList, 
-  Loader2, Pencil, Trash2 
+  Sparkles, 
+  Loader2, 
+  AlertCircle, 
+  X, 
+  CheckCircle2, 
+  XCircle, 
+  AlertTriangle, 
+  Info, 
+  ChevronDown, 
+  Download, 
+  RefreshCw 
 } from 'lucide-vue-next'
-import { useTaskStore, type Task } from '~/stores/tasks'
-import { useAuthStore } from '~/stores/auth'
-import { useRouter } from '#app'
-import { ref, computed, reactive, onMounted } from 'vue'
+import { useBrief } from '~/composables/useBrief'
+import type { GenerationMode, GenerationPersona } from '~/types/brief'
 
-const taskStore = useTaskStore()
-const authStore = useAuthStore()
-const router = useRouter()
+const { loading, error, result, history, generate, clearError, restoreFromHistory } = useBrief()
 
-const isCreateModalOpen = ref(false)
-const editingTask = ref<Task | null>(null)
-const isModalOpen = computed(() => isCreateModalOpen.value || !!editingTask.value)
-
-const taskForm = reactive({
-  title: '',
-  description: '',
-  status: 'todo' as Task['status'],
-  priority: 'medium' as Task['priority']
+const form = reactive({
+  rawInput: '',
+  mode: 'mvp' as GenerationMode,
+  persona: 'PM' as GenerationPersona,
+  compressToMvp: true
 })
 
-const statusClasses = {
-  'todo': 'bg-blue-100 text-blue-800',
-  'in-progress': 'bg-yellow-100 text-yellow-800',
-  'done': 'bg-green-100 text-green-800'
+const handleGenerate = async () => {
+  if (!form.rawInput || loading.value) return
+  await generate({ ...form })
 }
 
-const priorityColors = {
-  'low': 'bg-gray-400',
-  'medium': 'bg-yellow-500',
-  'high': 'bg-red-500'
+const autoResize = (event: Event) => {
+  const target = event.target as HTMLTextAreaElement
+  target.style.height = 'auto'
+  target.style.height = target.scrollHeight + 'px'
 }
 
-const editTask = (task: Task) => {
-  editingTask.value = task
-  taskForm.title = task.title
-  taskForm.description = task.description
-  taskForm.status = task.status
-  taskForm.priority = task.priority
+const reset = () => {
+  result.value = null
+  form.rawInput = ''
+  // Focus textarea after next tick
+  setTimeout(() => {
+    const textarea = document.getElementById('rawInput')
+    textarea?.focus()
+  }, 0)
 }
 
-const closeModal = () => {
-  isCreateModalOpen.value = false
-  editingTask.value = null
-  taskForm.title = ''
-  taskForm.description = ''
-  taskForm.status = 'todo'
-  taskForm.priority = 'medium'
+const exportMarkdown = () => {
+  if (!result.value) return
+
+  const r = result.value
+  const md = `# ${r.summary}
+**Confidence:** ${r.confidenceScore}/10
+
+## Problem
+${r.businessProblem}
+
+## Goal
+${r.goal}
+
+## Target User
+${r.targetUser}
+
+## Proposed Solution
+${r.proposedSolution}
+
+## MVP Scope
+${r.mvpScope.map(i => `- [x] ${i}`).join('\n')}
+
+## Out of Scope
+${r.outOfScope.map(i => `- [ ] ${i}`).join('\n')}
+
+## Risks
+${r.risks.map(i => `- [!] ${i}`).join('\n')}
+
+## Assumptions
+${r.assumptions.map(i => `- [i] ${i}`).join('\n')}
+
+## Technical Approach
+${r.technicalApproach}
+
+## User Flow (Mermaid)
+\`\`\`mermaid
+${r.mermaidDiagram}
+\`\`\`
+
+## Clarifying Questions
+${r.clarifyingQuestions.map(i => `- ${i}`).join('\n')}
+
+## Stakeholder Reply
+${r.stakeholderReply}
+
+## Missing Info
+${r.missingInfo.map(i => `- ${i}`).join('\n')}
+`
+
+  const blob = new Blob([md], { type: 'text/markdown' })
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement('a')
+  
+  const words = r.summary.split(' ').slice(0, 3).map(w => w.toLowerCase().replace(/[^a-z0-9]/g, ''))
+  const filename = `brief-${words.join('-')}-${Date.now()}.md`
+  
+  a.href = url
+  a.download = filename
+  document.body.appendChild(a)
+  a.click()
+  document.body.removeChild(a)
+  URL.revokeObjectURL(url)
 }
-
-const saveTask = async () => {
-  if (!taskForm.title) return
-
-  let success = false
-  if (editingTask.value) {
-    success = await taskStore.updateTask(editingTask.value.id, { ...taskForm })
-  } else {
-    success = await taskStore.createTask({ ...taskForm })
-  }
-
-  if (success) {
-    closeModal()
-  }
-}
-
-const confirmDelete = async (id: string) => {
-  if (confirm('Are you sure you want to delete this task?')) {
-    await taskStore.deleteTask(id)
-  }
-}
-
-onMounted(async () => {
-  authStore.initAuth()
-  if (!authStore.isAuthenticated) {
-    router.push('/login')
-    return
-  }
-  await taskStore.fetchTasks()
-})
 </script>
+
+<style scoped>
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+</style>

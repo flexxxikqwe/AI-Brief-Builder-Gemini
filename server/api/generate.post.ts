@@ -2,6 +2,11 @@ import { GoogleGenAI } from "@google/genai";
 
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 
+// In-memory rate limiter
+const rateLimitMap = new Map<string, { count: number; resetAt: number }>();
+const RATE_LIMIT = 10;
+const WINDOW_MS = 60 * 1000;
+
 const SYSTEM_PROMPT = `
 You are a world-class AI Product Strategist and AI Solutions Architect.
 Transform vague business ideas into structured, actionable specifications.
@@ -23,6 +28,30 @@ JSON KEYS: summary, businessProblem, goal, targetUser, clarifyingQuestions[], pr
 `;
 
 export default defineEventHandler(async (event) => {
+  // 1. Rate Limiting
+  const ip = getHeader(event, 'x-forwarded-for') || event.node.req.socket?.remoteAddress || 'unknown';
+  const now = Date.now();
+  const limitData = rateLimitMap.get(ip);
+
+  if (limitData && now < limitData.resetAt) {
+    if (limitData.count >= RATE_LIMIT) {
+      throw createError({
+        statusCode: 429,
+        statusMessage: 'Too many requests. Try again in a minute.'
+      });
+    }
+    limitData.count++;
+  } else {
+    rateLimitMap.set(ip, { count: 1, resetAt: now + WINDOW_MS });
+  }
+
+  // Clean up old entries occasionally
+  if (rateLimitMap.size > 1000) {
+    for (const [key, value] of rateLimitMap.entries()) {
+      if (now > value.resetAt) rateLimitMap.delete(key);
+    }
+  }
+
   const body = await readBody(event);
   const { rawInput, mode, persona, compressToMvp } = body;
 
@@ -36,7 +65,7 @@ export default defineEventHandler(async (event) => {
   if (!GEMINI_API_KEY) {
     throw createError({
       statusCode: 500,
-      statusMessage: "Gemini API key is not configured on the server"
+      statusMessage: "Server configuration error: Gemini API key is missing"
     });
   }
 
@@ -56,7 +85,8 @@ export default defineEventHandler(async (event) => {
       ${rawInput}
     `;
 
-    const response = await ai.models.generateContent({
+    // 2. Timeout (25s)
+    const aiCall = ai.models.generateContent({
       model: "gemini-2.0-flash",
       contents: userPrompt,
       config: {
@@ -66,17 +96,45 @@ export default defineEventHandler(async (event) => {
       },
     });
 
+    const timeoutPromise = new Promise<never>((_, reject) => 
+      setTimeout(() => reject(new Error('Request timeout')), 25000)
+    );
+
+    const response = await Promise.race([aiCall, timeoutPromise]);
+
     const text = response.text;
     if (!text) {
       throw new Error("Empty response from Gemini");
     }
 
     return JSON.parse(text);
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Gemini Generation Error:", error);
+    
+    if (error instanceof Error) {
+      const msg = error.message.toLowerCase();
+      
+      if (msg.includes('timeout')) {
+        throw createError({ statusCode: 504, statusMessage: 'AI took too long, please try again' });
+      }
+      
+      if (msg.includes('429') || msg.includes('quota')) {
+        throw createError({ statusCode: 503, statusMessage: 'AI quota exceeded, try later' });
+      }
+      
+      if (msg.includes('api key')) {
+        throw createError({ statusCode: 500, statusMessage: 'Server configuration error' });
+      }
+
+      throw createError({
+        statusCode: 500,
+        statusMessage: error.message || "Failed to generate brief"
+      });
+    }
+
     throw createError({
       statusCode: 500,
-      statusMessage: error.message || "Failed to generate brief"
+      statusMessage: "An unexpected error occurred during generation"
     });
   }
 });

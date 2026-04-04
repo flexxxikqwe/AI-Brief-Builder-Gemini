@@ -8,12 +8,27 @@ export default defineNuxtConfig({
   },
   app: {
     head: {
-      title: 'TaskFlow - Nuxt 3 Task Manager'
+      title: 'AI Brief Builder'
     }
   },
   runtimeConfig: {
     public: {
       apiBase: process.env.API_BASE || '/api'
+    }
+  },
+  vite: {
+    optimizeDeps: {
+      include: ['lucide-vue-next', 'mermaid']
+    },
+    build: {
+      rollupOptions: {
+        output: {
+          manualChunks: {
+            'mermaid': ['mermaid'],
+            'lucide': ['lucide-vue-next']
+          }
+        }
+      }
     }
   }
 })

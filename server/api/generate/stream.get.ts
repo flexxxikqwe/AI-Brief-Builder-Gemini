@@ -137,8 +137,23 @@ export default defineEventHandler(async (event) => {
 
   const config = useRuntimeConfig();
   const GEMINI_API_KEY = config.geminiApiKey;
-  if (!GEMINI_API_KEY) {
-    throw createError({ statusCode: 500, statusMessage: 'Server configuration error: Gemini API key is missing' });
+
+  // Fallback: читаем напрямую из process.env в runtime
+  const apiKey = GEMINI_API_KEY || 
+    process.env.NUXT_GEMINI_API_KEY || 
+    process.env.GEMINI_API_KEY || 
+    ''
+
+  if (!apiKey) {
+    // Вместо throw — отправляем SSE error чтобы клиент его увидел
+    setHeader(event, 'Content-Type', 'text/event-stream')
+    setHeader(event, 'Cache-Control', 'no-cache')
+    event.node.res.write(`data: ${JSON.stringify({ 
+      type: 'error', 
+      message: 'API key not configured. Set NUXT_GEMINI_API_KEY in environment variables.' 
+    })}\n\n`)
+    event.node.res.end()
+    return
   }
 
   // 3. Set SSE headers
@@ -157,7 +172,7 @@ ${rawInput}
 `;
 
   // 4. Stream from Gemini
-  const ai = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
+  const ai = new GoogleGenAI({ apiKey: apiKey });
 
   const sendEvent = (data: object) => {
     event.node.res.write(`data: ${JSON.stringify(data)}\n\n`);

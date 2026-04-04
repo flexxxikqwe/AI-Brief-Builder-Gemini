@@ -109,6 +109,18 @@ export default defineEventHandler(async (event) => {
   const config = useRuntimeConfig();
   const GEMINI_API_KEY = config.geminiApiKey;
 
+  const apiKey = GEMINI_API_KEY || 
+    process.env.NUXT_GEMINI_API_KEY || 
+    process.env.GEMINI_API_KEY || 
+    ''
+
+  if (!apiKey) {
+    throw createError({
+      statusCode: 500,
+      statusMessage: 'API key not configured. Set NUXT_GEMINI_API_KEY in environment variables.'
+    })
+  }
+
   // 1. Rate Limiting
   const ip = getHeader(event, 'x-forwarded-for') || event.node.req.socket?.remoteAddress || 'unknown';
   const now = Date.now();
@@ -143,15 +155,8 @@ export default defineEventHandler(async (event) => {
     });
   }
 
-  if (!GEMINI_API_KEY) {
-    throw createError({
-      statusCode: 500,
-      statusMessage: "Server configuration error: Gemini API key is missing"
-    });
-  }
-
   try {
-    const ai = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
+    const ai = new GoogleGenAI({ apiKey: apiKey });
     
     const strategy = compressToMvp 
       ? "STRATEGY: Aggressive MVP — ruthlessly cut scope, ship the smallest possible thing that validates the core hypothesis"

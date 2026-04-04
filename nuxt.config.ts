@@ -12,14 +12,11 @@ export default defineNuxtConfig({
     }
   },
   runtimeConfig: {
-    geminiApiKey: process.env.NUXT_GEMINI_API_KEY || process.env.GEMINI_API_KEY || '',
+    // Nuxt автоматически читает NUXT_GEMINI_API_KEY из env в runtime
+    // НЕ используем process.env здесь — это работает только во время билда
+    geminiApiKey: '',
     public: {
-      apiBase: process.env.API_BASE || '/api'
+      apiBase: '/api'
     }
   },
-  vite: {
-    optimizeDeps: {
-      include: ['lucide-vue-next', 'mermaid']
-    }
-  }
 })

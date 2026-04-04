@@ -123,25 +123,16 @@
         </div>
 
         <!-- Loading State -->
-        <div v-else-if="loading" class="h-full bg-white rounded-3xl border border-gray-100 p-8 shadow-sm space-y-8 animate-pulse">
-          <div class="h-8 w-3/4 bg-gray-100 rounded-lg"></div>
-          <div class="space-y-3">
-            <div class="h-4 w-full bg-gray-100 rounded"></div>
-            <div class="h-4 w-[85%] bg-gray-100 rounded"></div>
-            <div class="h-4 w-[60%] bg-gray-100 rounded"></div>
-          </div>
-          <div class="grid grid-cols-2 gap-8">
-            <div class="space-y-3">
-              <div class="h-4 w-full bg-gray-100 rounded"></div>
-              <div class="h-4 w-full bg-gray-100 rounded"></div>
-              <div class="h-4 w-full bg-gray-100 rounded"></div>
+        <div v-else-if="loading" class="h-full bg-white rounded-3xl border border-gray-100 p-8 shadow-sm space-y-6">
+          <div class="flex items-center gap-3">
+            <div class="flex gap-1">
+              <span class="w-2 h-2 bg-violet-400 rounded-full animate-bounce [animation-delay:0ms]"></span>
+              <span class="w-2 h-2 bg-violet-400 rounded-full animate-bounce [animation-delay:150ms]"></span>
+              <span class="w-2 h-2 bg-violet-400 rounded-full animate-bounce [animation-delay:300ms]"></span>
             </div>
-            <div class="space-y-3">
-              <div class="h-4 w-full bg-gray-100 rounded"></div>
-              <div class="h-4 w-full bg-gray-100 rounded"></div>
-              <div class="h-4 w-full bg-gray-100 rounded"></div>
-            </div>
+            <span class="text-sm text-gray-500 font-medium">Generating your brief...</span>
           </div>
+          <div class="text-xs font-mono text-gray-400 bg-gray-50 rounded-xl p-4 max-h-[400px] overflow-y-auto leading-relaxed whitespace-pre-wrap break-all">{{ streamingText || 'Connecting to AI...' }}</div>
         </div>
 
         <!-- Result State -->
@@ -305,7 +296,7 @@ import {
 import { useBrief } from '~/composables/useBrief'
 import type { GenerationMode, GenerationPersona } from '~/types/brief'
 
-const { loading, error, result, history, generate, clearError, restoreFromHistory } = useBrief()
+const { loading, error, result, history, streamingText, generate, clearError, restoreFromHistory } = useBrief()
 
 const form = reactive({
   rawInput: '',

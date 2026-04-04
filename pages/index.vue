@@ -77,7 +77,7 @@
               </template>
             </button>
 
-            <div v-if="error" class="bg-red-50 border-l-4 border-red-400 p-4 rounded-lg flex items-start justify-between">
+            <div v-if="error" class="bg-red-50 border border-red-200 p-4 rounded-lg flex items-start justify-between">
               <div class="flex items-center gap-2 text-red-700">
                 <AlertCircle class="w-5 h-5 flex-shrink-0" />
                 <span class="text-sm">{{ error }}</span>
@@ -132,7 +132,10 @@
             </div>
             <span class="text-sm text-gray-500 font-medium">Generating your brief...</span>
           </div>
-          <div class="text-xs font-mono text-gray-400 bg-gray-50 rounded-xl p-4 max-h-[400px] overflow-y-auto leading-relaxed whitespace-pre-wrap break-all">{{ streamingText || 'Connecting to AI...' }}</div>
+          <div 
+            ref="streamRef"
+            class="text-xs font-mono text-gray-400 bg-gray-50 rounded-xl p-4 max-h-[400px] overflow-y-auto leading-relaxed whitespace-pre-wrap break-all"
+          >{{ streamingText || 'Connecting to AI...' }}</div>
         </div>
 
         <!-- Result State -->
@@ -140,7 +143,7 @@
           <div class="p-8 space-y-8">
             <!-- Header -->
             <div class="flex items-start justify-between gap-4">
-              <h2 class="text-2xl font-bold text-violet-600 leading-tight">{{ result.summary }}</h2>
+              <h2 class="text-2xl font-bold text-gray-900 leading-tight">{{ result.summary }}</h2>
               <div 
                 class="flex-shrink-0 px-3 py-1 rounded-full text-sm font-bold"
                 :class="result.confidenceScore >= 7 ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'"
@@ -257,19 +260,29 @@
 
           <!-- Footer -->
           <div class="p-6 bg-gray-50 border-t border-gray-100 flex items-center justify-between gap-4">
-            <button 
-              @click="exportMarkdown"
-              class="flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 rounded-lg text-sm font-semibold text-gray-700 hover:bg-gray-50 transition-all shadow-sm"
-            >
-              <Download class="w-4 h-4" />
-              <span>Export .md</span>
-            </button>
+            <div class="flex items-center gap-2">
+              <button 
+                @click="exportMarkdown"
+                class="flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 rounded-lg text-sm font-semibold text-gray-700 hover:bg-gray-50 transition-all shadow-sm"
+              >
+                <Download class="w-4 h-4" />
+                <span>Export .md</span>
+              </button>
+              <button 
+                @click="handleGenerate"
+                :disabled="loading"
+                class="flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 rounded-lg text-sm font-semibold text-gray-700 hover:bg-gray-50 transition-all shadow-sm disabled:opacity-50"
+              >
+                <RefreshCw class="w-4 h-4" :class="{ 'animate-spin': loading }" />
+                <span>Regenerate</span>
+              </button>
+            </div>
             <button 
               @click="reset"
               class="flex items-center gap-2 px-4 py-2 bg-violet-600 text-white rounded-lg text-sm font-semibold hover:bg-violet-700 transition-all shadow-sm"
             >
-              <RefreshCw class="w-4 h-4" />
-              <span>Generate Again</span>
+              <Plus class="w-4 h-4" />
+              <span>New Brief</span>
             </button>
           </div>
         </div>
@@ -279,7 +292,7 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, onMounted } from 'vue'
+import { reactive, onMounted, ref, watch, nextTick } from 'vue'
 import { 
   Sparkles, 
   Loader2, 
@@ -291,12 +304,23 @@ import {
   Info, 
   ChevronDown, 
   Download, 
-  RefreshCw 
+  RefreshCw,
+  Plus
 } from 'lucide-vue-next'
 import { useBrief } from '~/composables/useBrief'
 import type { GenerationMode, GenerationPersona } from '~/types/brief'
 
 const { loading, error, result, history, streamingText, generate, clearError, restoreFromHistory } = useBrief()
+
+const streamRef = ref<HTMLElement | null>(null)
+
+watch(streamingText, () => {
+  nextTick(() => {
+    if (streamRef.value) {
+      streamRef.value.scrollTop = streamRef.value.scrollHeight
+    }
+  })
+})
 
 const form = reactive({
   rawInput: '',

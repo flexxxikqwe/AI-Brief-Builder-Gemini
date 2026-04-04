@@ -1,5 +1,5 @@
 {
-  "name": "AI Brief Builder MVP",
-  "description": "Превращает сырые бизнес-запросы в структурированные ТЗ и брифы.",
+  "name": "TaskFlow - Nuxt 3 Task Manager",
+  "description": "A polished full-stack task management application built with Nuxt 3, Pinia, Tailwind CSS, and Express. Features include JWT authentication, real-time filtering, sorting, and a clean, responsive UI.",
   "requestFramePermissions": []
 }

@@ -12,8 +12,6 @@ export default defineNuxtConfig({
     }
   },
   runtimeConfig: {
-    // Nuxt автоматически читает NUXT_GEMINI_API_KEY из env в runtime
-    // НЕ используем process.env здесь — это работает только во время билда
     geminiApiKey: '',
     public: {
       apiBase: '/api',
@@ -22,4 +20,11 @@ export default defineNuxtConfig({
                     ''
     }
   },
+  vite: {
+    define: {
+      'import.meta.env.VITE_GEMINI_API_KEY': 
+        JSON.stringify(process.env.VITE_GEMINI_API_KEY || 
+                       process.env.GEMINI_API_KEY || '')
+    }
+  }
 })

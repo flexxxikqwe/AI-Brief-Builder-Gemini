@@ -12,8 +12,7 @@ export default defineNuxtConfig({
     }
   },
   runtimeConfig: {
-    geminiApiKey: '',
-    jwtSecret: '',
+    geminiApiKey: process.env.NUXT_GEMINI_API_KEY || process.env.GEMINI_API_KEY || '',
     public: {
       apiBase: process.env.API_BASE || '/api'
     }
@@ -21,16 +20,6 @@ export default defineNuxtConfig({
   vite: {
     optimizeDeps: {
       include: ['lucide-vue-next', 'mermaid']
-    },
-    build: {
-      rollupOptions: {
-        output: {
-          manualChunks: {
-            'mermaid': ['mermaid'],
-            'lucide': ['lucide-vue-next']
-          }
-        }
-      }
     }
   }
 })

@@ -10,25 +10,7 @@
         </div>
         
         <div class="flex items-center gap-4">
-          <ClientOnly>
-            <template v-if="authStore.isAuthenticated">
-              <span class="text-sm text-gray-500 hidden sm:inline">Welcome, {{ authStore.user?.username }}</span>
-              <button 
-                @click="handleLogout"
-                class="text-sm font-medium text-gray-700 hover:text-violet-600 transition-colors"
-              >
-                Logout
-              </button>
-            </template>
-            <template v-else>
-              <NuxtLink 
-                to="/login"
-                class="text-sm font-medium text-gray-700 hover:text-violet-600 transition-colors"
-              >
-                Login
-              </NuxtLink>
-            </template>
-          </ClientOnly>
+          <!-- Auth removed -->
         </div>
       </div>
     </header>
@@ -49,14 +31,4 @@
 
 <script setup lang="ts">
 import { Sparkles } from 'lucide-vue-next'
-import { useAuthStore } from '~/stores/auth'
-import { useRouter } from '#app'
-
-const authStore = useAuthStore()
-const router = useRouter()
-
-const handleLogout = () => {
-  authStore.logout()
-  router.push('/login')
-}
 </script>

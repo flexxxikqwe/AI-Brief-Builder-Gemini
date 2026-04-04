@@ -1,6 +1,5 @@
 import { ref, type Ref } from 'vue'
 import type { BriefData, GenerateParams } from '~/types/brief'
-import { useAuthStore } from '~/stores/auth'
 import { useRuntimeConfig } from '#app'
 
 export const useBrief = () => {
@@ -20,13 +19,7 @@ export const useBrief = () => {
   }
 
   const generate = async (params: GenerateParams) => {
-    const authStore = useAuthStore()
     const config = useRuntimeConfig()
-
-    if (!authStore.token) {
-      error.value = 'You must be logged in to generate a brief'
-      return
-    }
 
     loading.value = true
     error.value = null
@@ -34,9 +27,6 @@ export const useBrief = () => {
     try {
       const response = await $fetch<BriefData>(`${config.public.apiBase}/generate`, {
         method: 'POST',
-        headers: {
-          Authorization: `Bearer ${authStore.token}`
-        },
         body: params
       })
 

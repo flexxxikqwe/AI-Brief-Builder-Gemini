@@ -1,7 +1,5 @@
 import { GoogleGenAI } from "@google/genai";
 
-const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
-
 // In-memory rate limiter
 const rateLimitMap = new Map<string, { count: number; resetAt: number }>();
 const RATE_LIMIT = 10;
@@ -28,6 +26,9 @@ JSON KEYS: summary, businessProblem, goal, targetUser, clarifyingQuestions[], pr
 `;
 
 export default defineEventHandler(async (event) => {
+  const config = useRuntimeConfig();
+  const GEMINI_API_KEY = config.geminiApiKey;
+
   // 1. Rate Limiting
   const ip = getHeader(event, 'x-forwarded-for') || event.node.req.socket?.remoteAddress || 'unknown';
   const now = Date.now();

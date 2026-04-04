@@ -12,6 +12,8 @@ export default defineNuxtConfig({
     }
   },
   runtimeConfig: {
+    geminiApiKey: '',
+    jwtSecret: '',
     public: {
       apiBase: process.env.API_BASE || '/api'
     }

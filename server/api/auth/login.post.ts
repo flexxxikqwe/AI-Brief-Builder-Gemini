@@ -2,9 +2,10 @@ import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 import { users } from "../../utils/db";
 
-const JWT_SECRET = process.env.JWT_SECRET || "hiring-task-secret-key-123";
-
 export default defineEventHandler(async (event) => {
+  const config = useRuntimeConfig();
+  const JWT_SECRET = config.jwtSecret || "hiring-task-secret-key-123";
+
   const body = await readBody(event);
   const { username, password } = body;
   

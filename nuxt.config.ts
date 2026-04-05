@@ -15,16 +15,19 @@ export default defineNuxtConfig({
     geminiApiKey: '',
     public: {
       apiBase: '/api',
-      geminiApiKey: process.env.NUXT_PUBLIC_GEMINI_API_KEY || 
-                    process.env.GEMINI_API_KEY || 
-                    ''
+      geminiApiKey: '' // Will be overridden by NUXT_PUBLIC_GEMINI_API_KEY in runtime
     }
   },
   vite: {
     define: {
       'import.meta.env.VITE_GEMINI_API_KEY': 
-        JSON.stringify(process.env.VITE_GEMINI_API_KEY || 
-                       process.env.GEMINI_API_KEY || '')
+        JSON.stringify(
+          [
+            process.env.VITE_GEMINI_API_KEY,
+            process.env.GEMINI_API_KEY,
+            process.env.NUXT_PUBLIC_GEMINI_API_KEY
+          ].find(key => key && key !== 'GEMINI_API_KEY' && key !== 'TODO_KEYHERE' && key !== 'MY_GEMINI_API_KEY') || ''
+        )
     }
   }
 })

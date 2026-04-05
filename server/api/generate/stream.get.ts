@@ -135,14 +135,17 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 400, statusMessage: 'Input cannot be empty' });
   }
 
-  const config = useRuntimeConfig();
-  const GEMINI_API_KEY = config.geminiApiKey;
+  const isPlaceholder = (key: string | undefined) => 
+    !key || key === 'GEMINI_API_KEY' || key === 'TODO_KEYHERE' || key === 'MY_GEMINI_API_KEY';
 
-  // Fallback: читаем напрямую из process.env в runtime
-  const apiKey = GEMINI_API_KEY || 
-    process.env.NUXT_GEMINI_API_KEY || 
-    process.env.GEMINI_API_KEY || 
-    ''
+  // @ts-ignore - reading from global variable set by Nitro plugin
+  const apiKey = [
+    // @ts-ignore
+    globalThis._GEMINI_API_KEY,
+    process.env.GEMINI_API_KEY,
+    process.env.NUXT_GEMINI_API_KEY,
+    process.env.NUXT_PUBLIC_GEMINI_API_KEY
+  ].find(key => !isPlaceholder(key)) || '';
 
   if (!apiKey) {
     // Вместо throw — отправляем SSE error чтобы клиент его увидел

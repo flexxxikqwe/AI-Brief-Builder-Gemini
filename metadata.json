@@ -1,6 +1,5 @@
 {
   "name": "AI Brief Builder",
   "description": "A production-ready MVP for turning raw business ideas into structured product briefs using Gemini AI. Features include secure AI generation, Mermaid diagram visualization, and Markdown export.",
-  "requestFramePermissions": [],
-  "geminiApiKey": "GEMINI_API_KEY"
+  "requestFramePermissions": []
 }

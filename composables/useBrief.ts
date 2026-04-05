@@ -131,18 +131,21 @@ export const useBrief = () => {
 
   // Прямой вызов Gemini из браузера (fallback для AI Studio / статик превью)
   const generateDirect = async (params: GenerateParams): Promise<void> => {
+    const isPlaceholder = (key: string | undefined) => 
+      !key || key === 'GEMINI_API_KEY' || key === 'TODO_KEYHERE' || key === 'MY_GEMINI_API_KEY';
+
     const config = useRuntimeConfig()
-    const apiKey = 
+    const apiKey = [
       // 1. Nuxt runtimeConfig (Render production — NUXT_PUBLIC_GEMINI_API_KEY)
-      config.public.geminiApiKey ||
+      config.public.geminiApiKey,
       // 2. Vite env (Google AI Studio — переменная VITE_GEMINI_API_KEY)
-      (import.meta.env.VITE_GEMINI_API_KEY as string) ||
+      (import.meta.env.VITE_GEMINI_API_KEY as string),
       // 3. Прямой env доступ через Vite (AI Studio иногда использует этот формат)
-      (import.meta.env.GEMINI_API_KEY as string) ||
-      ''
+      (import.meta.env.GEMINI_API_KEY as string)
+    ].find(key => !isPlaceholder(key)) || '';
 
     if (!apiKey) {
-      error.value = 'API key missing. Add VITE_GEMINI_API_KEY in AI Studio environment settings, or NUXT_PUBLIC_GEMINI_API_KEY on Render.'
+      error.value = 'API key missing or invalid. Add VITE_GEMINI_API_KEY in AI Studio environment settings, or NUXT_PUBLIC_GEMINI_API_KEY on Render.'
       return
     }
 

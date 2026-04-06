@@ -32,8 +32,9 @@ Turn your messy business ideas into structured, actionable product specification
 
 2. **Set up environment variables:**
    Create a `.env` file or set environment variables:
-   - `NUXT_GEMINI_API_KEY`: Your Gemini API Key (Server-side).
-   - `NUXT_PUBLIC_GEMINI_API_KEY`: Your Gemini API Key (Client-side fallback).
+   - `NEXT_PUBLIC_GEMINI_API_KEY`: Primary API Key (AI Studio & Client-side).
+   - `NUXT_GEMINI_API_KEY`: Server-side API Key (fallback).
+   - `NUXT_PUBLIC_GEMINI_API_KEY`: Public fallback for production environments.
 
 3. **Start the development server:**
    ```bash
@@ -48,4 +49,4 @@ Turn your messy business ideas into structured, actionable product specification
 
 ## Deployment
 
-The project is ready for deployment on platforms like Render, Vercel, or Cloud Run. Ensure `NUXT_GEMINI_API_KEY` is set in your production environment.
+The project is ready for deployment on platforms like Render, Vercel, or Cloud Run. Ensure `NEXT_PUBLIC_GEMINI_API_KEY` or `NUXT_GEMINI_API_KEY` is set in your production environment.

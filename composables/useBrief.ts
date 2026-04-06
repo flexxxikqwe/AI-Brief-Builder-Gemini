@@ -141,7 +141,9 @@ export const useBrief = () => {
       // 2. Vite env (Google AI Studio — переменная VITE_GEMINI_API_KEY)
       (import.meta.env.VITE_GEMINI_API_KEY as string),
       // 3. Прямой env доступ через Vite (AI Studio иногда использует этот формат)
-      (import.meta.env.GEMINI_API_KEY as string)
+      (import.meta.env.GEMINI_API_KEY as string),
+      // 4. Автоматически вставленный ключ в AI Studio
+      (import.meta.env.API_KEY as string)
     ].find(key => !isPlaceholder(key)) || '';
 
     if (!apiKey) {
@@ -161,7 +163,7 @@ ${params.rawInput}`
 
     try {
       const stream = await ai.models.generateContentStream({
-        model: 'gemini-2.0-flash',
+        model: 'gemini-3-flash-preview',
         contents: userPrompt,
         config: {
           systemInstruction: SYSTEM_PROMPT,

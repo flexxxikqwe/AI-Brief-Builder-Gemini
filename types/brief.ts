@@ -44,4 +44,5 @@ export interface GenerateParams {
   mode: GenerationMode;
   persona: GenerationPersona;
   compressToMvp: boolean;
+  responseLanguage: 'en' | 'ru';
 }

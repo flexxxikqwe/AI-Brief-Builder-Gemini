@@ -4,18 +4,18 @@
       <!-- LEFT COLUMN: Form -->
       <div class="space-y-8">
         <div class="space-y-2">
-          <h1 class="text-3xl font-bold text-gray-900 tracking-tight">AI Brief Builder</h1>
-          <p class="text-gray-500">Turn a raw idea into a full product spec in seconds</p>
+          <h1 class="text-3xl font-bold text-gray-900 dark:text-white tracking-tight">{{ t('form-title') }}</h1>
+          <p class="text-gray-500 dark:text-gray-400">{{ t('form-subtitle') }}</p>
         </div>
 
-        <form @submit.prevent="handleGenerate" class="space-y-6 bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+        <form @submit.prevent="handleGenerate" class="space-y-6 bg-white dark:bg-gray-900 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800">
           <div class="space-y-2">
-            <label for="rawInput" class="block text-sm font-medium text-gray-700">Your idea</label>
+            <label for="rawInput" class="block text-sm font-medium text-gray-700 dark:text-gray-300">{{ t('form-idea-label') }}</label>
             <textarea
               id="rawInput"
               v-model="form.rawInput"
-              placeholder="Describe what you want to build — the messier the better"
-              class="w-full min-h-[160px] p-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-violet-500 focus:border-transparent transition-all resize-none overflow-hidden"
+              :placeholder="t('form-idea-placeholder')"
+              class="w-full min-h-[160px] p-4 border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white rounded-xl focus:ring-2 focus:ring-violet-500 focus:border-transparent transition-all resize-none overflow-hidden"
               @input="autoResize"
               @keydown.enter.meta="handleGenerate"
               @keydown.enter.ctrl="handleGenerate"
@@ -25,28 +25,28 @@
 
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div class="space-y-2">
-              <label for="mode" class="block text-sm font-medium text-gray-700">Mode</label>
+              <label for="mode" class="block text-sm font-medium text-gray-700 dark:text-gray-300">{{ t('form-mode-label') }}</label>
               <select
                 id="mode"
                 v-model="form.mode"
-                class="w-full p-2.5 border border-gray-200 rounded-lg focus:ring-2 focus:ring-violet-500 focus:border-transparent transition-all"
+                class="w-full p-2.5 border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white rounded-lg focus:ring-2 focus:ring-violet-500 focus:border-transparent transition-all"
               >
-                <option value="internal">Internal</option>
-                <option value="stakeholder">Stakeholder</option>
-                <option value="mvp">MVP</option>
+                <option value="internal">{{ t('mode-internal') }}</option>
+                <option value="stakeholder">{{ t('mode-stakeholder') }}</option>
+                <option value="mvp">{{ t('mode-mvp') }}</option>
               </select>
             </div>
 
             <div class="space-y-2">
-              <label for="persona" class="block text-sm font-medium text-gray-700">Persona</label>
+              <label for="persona" class="block text-sm font-medium text-gray-700 dark:text-gray-300">{{ t('form-persona-label') }}</label>
               <select
                 id="persona"
                 v-model="form.persona"
-                class="w-full p-2.5 border border-gray-200 rounded-lg focus:ring-2 focus:ring-violet-500 focus:border-transparent transition-all"
+                class="w-full p-2.5 border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white rounded-lg focus:ring-2 focus:ring-violet-500 focus:border-transparent transition-all"
               >
-                <option value="CEO">CEO</option>
-                <option value="CTO">CTO</option>
-                <option value="PM">PM</option>
+                <option value="CEO">{{ t('persona-ceo') }}</option>
+                <option value="CTO">{{ t('persona-cto') }}</option>
+                <option value="PM">{{ t('persona-pm') }}</option>
               </select>
             </div>
           </div>
@@ -56,9 +56,9 @@
               id="compressToMvp"
               v-model="form.compressToMvp"
               type="checkbox"
-              class="w-4 h-4 text-violet-600 border-gray-300 rounded focus:ring-violet-500"
+              class="w-4 h-4 text-violet-600 border-gray-300 dark:border-gray-600 rounded focus:ring-violet-500"
             />
-            <label for="compressToMvp" class="text-sm text-gray-700">Compress to MVP scope</label>
+            <label for="compressToMvp" class="text-sm text-gray-700 dark:text-gray-300">{{ t('form-compress-mvp') }}</label>
           </div>
 
           <div class="space-y-4">
@@ -69,11 +69,11 @@
             >
               <template v-if="loading">
                 <Loader2 class="w-5 h-5 animate-spin" />
-                <span>Generating...</span>
+                <span>{{ t('form-generating-btn') }}</span>
               </template>
               <template v-else>
                 <Sparkles class="w-5 h-5" />
-                <span>Generate Brief</span>
+                <span>{{ t('form-generate-btn') }}</span>
               </template>
             </button>
 
@@ -91,18 +91,18 @@
 
         <!-- History -->
         <div v-if="history.length > 0" class="space-y-4">
-          <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wider">Recent</h3>
+          <h3 class="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">{{ t('history-recent') }}</h3>
           <div class="flex overflow-x-auto gap-4 pb-4 scrollbar-hide">
             <button
               v-for="(item, index) in history"
               :key="index"
               @click="restoreFromHistory(index)"
-              class="flex-shrink-0 w-64 p-4 bg-white border border-gray-100 rounded-xl shadow-sm hover:shadow-md hover:border-violet-200 transition-all text-left space-y-2"
+              class="flex-shrink-0 w-64 p-4 bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-xl shadow-sm hover:shadow-md hover:border-violet-200 dark:hover:border-violet-800 transition-all text-left space-y-2"
             >
-              <p class="text-sm font-bold text-gray-900 line-clamp-2">{{ item.summary }}</p>
+              <p class="text-sm font-bold text-gray-900 dark:text-white line-clamp-2">{{ item.summary }}</p>
               <div class="flex items-center gap-2">
-                <span class="text-[10px] px-1.5 py-0.5 bg-gray-100 text-gray-500 rounded uppercase font-bold">{{ item.mode }}</span>
-                <span class="text-[10px] px-1.5 py-0.5 bg-violet-50 text-violet-600 rounded uppercase font-bold">{{ item.persona }}</span>
+                <span class="text-[10px] px-1.5 py-0.5 bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 rounded uppercase font-bold">{{ t(`mode-${item.mode}` as any) }}</span>
+                <span class="text-[10px] px-1.5 py-0.5 bg-violet-50 dark:bg-violet-900/30 text-violet-600 dark:text-violet-400 rounded uppercase font-bold">{{ t(`persona-${item.persona?.toLowerCase()}` as any) }}</span>
               </div>
             </button>
           </div>
@@ -112,85 +112,85 @@
       <!-- RIGHT COLUMN: Result -->
       <div class="min-h-[600px]">
         <!-- Empty State -->
-        <div v-if="!result && !loading" class="h-full flex flex-col items-center justify-center text-center space-y-4 bg-gray-50/50 rounded-3xl border-2 border-dashed border-gray-200 p-12">
-          <div class="w-16 h-16 bg-white rounded-2xl shadow-sm flex items-center justify-center">
-            <Sparkles class="w-8 h-8 text-gray-300" />
+        <div v-if="!result && !loading" class="h-full flex flex-col items-center justify-center text-center space-y-4 bg-gray-50/50 dark:bg-gray-900/50 rounded-3xl border-2 border-dashed border-gray-200 dark:border-gray-800 p-12">
+          <div class="w-16 h-16 bg-white dark:bg-gray-800 rounded-2xl shadow-sm flex items-center justify-center">
+            <Sparkles class="w-8 h-8 text-gray-300 dark:text-gray-600" />
           </div>
           <div class="space-y-2">
-            <h3 class="text-xl font-bold text-gray-900">Your brief will appear here</h3>
-            <p class="text-gray-500 max-w-xs mx-auto">The AI will generate goals, MVP scope, risks, tech approach and user flow</p>
+            <h3 class="text-xl font-bold text-gray-900 dark:text-white">{{ t('result-empty-title') }}</h3>
+            <p class="text-gray-500 dark:text-gray-400 max-w-xs mx-auto">{{ t('result-empty-desc') }}</p>
           </div>
         </div>
 
         <!-- Loading State -->
-        <div v-else-if="loading" class="h-full bg-white rounded-3xl border border-gray-100 p-8 shadow-sm space-y-6">
+        <div v-else-if="loading" class="h-full bg-white dark:bg-gray-900 rounded-3xl border border-gray-100 dark:border-gray-800 p-8 shadow-sm space-y-6">
           <div class="flex items-center gap-3">
             <div class="flex gap-1">
               <span class="w-2 h-2 bg-violet-400 rounded-full animate-bounce [animation-delay:0ms]"></span>
               <span class="w-2 h-2 bg-violet-400 rounded-full animate-bounce [animation-delay:150ms]"></span>
               <span class="w-2 h-2 bg-violet-400 rounded-full animate-bounce [animation-delay:300ms]"></span>
             </div>
-            <span class="text-sm text-gray-500 font-medium">Generating your brief...</span>
+            <span class="text-sm text-gray-500 dark:text-gray-400 font-medium">{{ t('result-loading-text') }}</span>
           </div>
           <div 
             ref="streamRef"
-            class="text-xs font-mono text-gray-400 bg-gray-50 rounded-xl p-4 max-h-[400px] overflow-y-auto leading-relaxed whitespace-pre-wrap break-all"
-          >{{ streamingText || 'Connecting to AI...' }}</div>
+            class="text-xs font-mono text-gray-400 dark:text-gray-500 bg-gray-50 dark:bg-gray-800/50 rounded-xl p-4 max-h-[400px] overflow-y-auto leading-relaxed whitespace-pre-wrap break-all"
+          >{{ streamingText || t('result-loading-connecting') }}</div>
         </div>
 
         <!-- Result State -->
-        <div v-else-if="result" class="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden">
+        <div v-else-if="result" class="bg-white dark:bg-gray-900 rounded-3xl border border-gray-100 dark:border-gray-800 shadow-sm overflow-hidden">
           <div class="p-8 space-y-8">
             <!-- Header -->
             <div class="flex items-start justify-between gap-4">
-              <h2 class="text-2xl font-bold text-gray-900 leading-tight">{{ result.summary }}</h2>
+              <h2 class="text-2xl font-bold text-gray-900 dark:text-white leading-tight">{{ result.summary }}</h2>
               <div 
                 class="flex-shrink-0 px-3 py-1 rounded-full text-sm font-bold"
-                :class="result.confidenceScore >= 7 ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'"
+                :class="result.confidenceScore >= 7 ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' : 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400'"
               >
                 {{ result.confidenceScore }}/10
               </div>
             </div>
 
-            <hr class="border-gray-100" />
+            <hr class="border-gray-100 dark:border-gray-800" />
 
             <!-- Core Info -->
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div class="space-y-1">
-                <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">Problem</p>
-                <p class="text-sm text-gray-700">{{ result.businessProblem }}</p>
+                <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">{{ t('result-problem') }}</p>
+                <p class="text-sm text-gray-700 dark:text-gray-300">{{ result.businessProblem }}</p>
               </div>
               <div class="space-y-1">
-                <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">Goal</p>
-                <p class="text-sm text-gray-700">{{ result.goal }}</p>
+                <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">{{ t('result-goal') }}</p>
+                <p class="text-sm text-gray-700 dark:text-gray-300">{{ result.goal }}</p>
               </div>
               <div class="space-y-1">
-                <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">Target User</p>
-                <p class="text-sm text-gray-700">{{ result.targetUser }}</p>
+                <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">{{ t('result-target-user') }}</p>
+                <p class="text-sm text-gray-700 dark:text-gray-300">{{ result.targetUser }}</p>
               </div>
             </div>
 
             <!-- Solution -->
             <div class="space-y-2">
-              <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">Proposed Solution</p>
-              <p class="text-sm text-gray-700 leading-relaxed">{{ result.proposedSolution }}</p>
+              <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">{{ t('result-proposed-solution') }}</p>
+              <p class="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">{{ result.proposedSolution }}</p>
             </div>
 
             <!-- Scope -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
               <div class="space-y-3">
-                <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">MVP Scope</p>
+                <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">{{ t('result-mvp-scope') }}</p>
                 <ul class="space-y-2">
-                  <li v-for="item in result.mvpScope" :key="item" class="flex items-start gap-2 text-sm text-gray-700">
+                  <li v-for="item in result.mvpScope" :key="item" class="flex items-start gap-2 text-sm text-gray-700 dark:text-gray-300">
                     <CheckCircle2 class="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
                     <span>{{ item }}</span>
                   </li>
                 </ul>
               </div>
               <div class="space-y-3">
-                <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">Out of Scope</p>
+                <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">{{ t('result-out-of-scope') }}</p>
                 <ul class="space-y-2">
-                  <li v-for="item in result.outOfScope" :key="item" class="flex items-start gap-2 text-sm text-gray-700">
+                  <li v-for="item in result.outOfScope" :key="item" class="flex items-start gap-2 text-sm text-gray-700 dark:text-gray-300">
                     <XCircle class="w-4 h-4 text-red-400 mt-0.5 flex-shrink-0" />
                     <span>{{ item }}</span>
                   </li>
@@ -201,18 +201,18 @@
             <!-- Risks & Assumptions -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
               <div class="space-y-3">
-                <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">Risks</p>
+                <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">{{ t('result-risks') }}</p>
                 <ul class="space-y-2">
-                  <li v-for="item in result.risks" :key="item" class="flex items-start gap-2 text-sm text-gray-700">
+                  <li v-for="item in result.risks" :key="item" class="flex items-start gap-2 text-sm text-gray-700 dark:text-gray-300">
                     <AlertTriangle class="w-4 h-4 text-amber-500 mt-0.5 flex-shrink-0" />
                     <span>{{ item }}</span>
                   </li>
                 </ul>
               </div>
               <div class="space-y-3">
-                <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">Assumptions</p>
+                <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">{{ t('result-assumptions') }}</p>
                 <ul class="space-y-2">
-                  <li v-for="item in result.assumptions" :key="item" class="flex items-start gap-2 text-sm text-gray-700">
+                  <li v-for="item in result.assumptions" :key="item" class="flex items-start gap-2 text-sm text-gray-700 dark:text-gray-300">
                     <Info class="w-4 h-4 text-blue-400 mt-0.5 flex-shrink-0" />
                     <span>{{ item }}</span>
                   </li>
@@ -222,59 +222,59 @@
 
             <!-- Tech Approach -->
             <div class="space-y-2">
-              <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">Technical Approach</p>
-              <p class="text-sm text-gray-700 leading-relaxed">{{ result.technicalApproach }}</p>
+              <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">{{ t('result-tech-approach') }}</p>
+              <p class="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">{{ result.technicalApproach }}</p>
             </div>
 
             <!-- User Flow -->
             <div class="space-y-4">
-              <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">User Flow</p>
+              <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">{{ t('result-user-flow') }}</p>
               <MermaidDiagram :diagram="result.mermaidDiagram" />
             </div>
 
             <!-- Accordions -->
             <div class="space-y-4">
-              <details class="group border border-gray-100 rounded-xl overflow-hidden">
-                <summary class="flex items-center justify-between p-4 cursor-pointer hover:bg-gray-50 transition-all">
-                  <span class="text-sm font-bold text-gray-700">Clarifying Questions</span>
+              <details class="group border border-gray-100 dark:border-gray-800 rounded-xl overflow-hidden">
+                <summary class="flex items-center justify-between p-4 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 transition-all">
+                  <span class="text-sm font-bold text-gray-700 dark:text-gray-300">{{ t('result-clarifying-questions') }}</span>
                   <ChevronDown class="w-4 h-4 text-gray-400 group-open:rotate-180 transition-transform" />
                 </summary>
                 <div class="p-4 pt-0">
                   <ul class="space-y-2">
-                    <li v-for="item in result.clarifyingQuestions" :key="item" class="text-sm text-gray-600 list-disc ml-4">{{ item }}</li>
+                    <li v-for="item in result.clarifyingQuestions" :key="item" class="text-sm text-gray-600 dark:text-gray-400 list-disc ml-4">{{ item }}</li>
                   </ul>
                 </div>
               </details>
 
-              <details class="group border border-gray-100 rounded-xl overflow-hidden">
-                <summary class="flex items-center justify-between p-4 cursor-pointer hover:bg-gray-50 transition-all">
-                  <span class="text-sm font-bold text-gray-700">Stakeholder Reply</span>
+              <details class="group border border-gray-100 dark:border-gray-800 rounded-xl overflow-hidden">
+                <summary class="flex items-center justify-between p-4 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 transition-all">
+                  <span class="text-sm font-bold text-gray-700 dark:text-gray-300">{{ t('result-stakeholder-reply') }}</span>
                   <ChevronDown class="w-4 h-4 text-gray-400 group-open:rotate-180 transition-transform" />
                 </summary>
                 <div class="p-4 pt-0">
-                  <p class="text-sm text-gray-600 italic">{{ result.stakeholderReply }}</p>
+                  <p class="text-sm text-gray-600 dark:text-gray-400 italic">{{ result.stakeholderReply }}</p>
                 </div>
               </details>
             </div>
           </div>
 
           <!-- Footer -->
-          <div class="p-6 bg-gray-50 border-t border-gray-100 flex items-center justify-between gap-4">
+          <div class="p-6 bg-gray-50 dark:bg-gray-800/50 border-t border-gray-100 dark:border-gray-800 flex items-center justify-between gap-4">
             <div class="flex items-center gap-2">
               <button 
                 @click="exportMarkdown"
-                class="flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 rounded-lg text-sm font-semibold text-gray-700 hover:bg-gray-50 transition-all shadow-sm"
+                class="flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-sm font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-all shadow-sm"
               >
                 <Download class="w-4 h-4" />
-                <span>Export .md</span>
+                <span>{{ t('action-export') }}</span>
               </button>
               <button 
                 @click="handleGenerate"
                 :disabled="loading"
-                class="flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 rounded-lg text-sm font-semibold text-gray-700 hover:bg-gray-50 transition-all shadow-sm disabled:opacity-50"
+                class="flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-sm font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-all shadow-sm disabled:opacity-50"
               >
                 <RefreshCw class="w-4 h-4" :class="{ 'animate-spin': loading }" />
-                <span>Regenerate</span>
+                <span>{{ t('action-regenerate') }}</span>
               </button>
             </div>
             <button 
@@ -282,7 +282,7 @@
               class="flex items-center gap-2 px-4 py-2 bg-violet-600 text-white rounded-lg text-sm font-semibold hover:bg-violet-700 transition-all shadow-sm"
             >
               <Plus class="w-4 h-4" />
-              <span>New Brief</span>
+              <span>{{ t('action-new-brief') }}</span>
             </button>
           </div>
         </div>
@@ -309,8 +309,12 @@ import {
 } from 'lucide-vue-next'
 import { useBrief } from '~/composables/useBrief'
 import type { GenerationMode, GenerationPersona } from '~/types/brief'
+import { useLocale } from '~/composables/useLocale'
+import { useResponseLocale } from '~/composables/useResponseLocale'
 
 const { loading, error, result, history, streamingText, generate, clearError, restoreFromHistory } = useBrief()
+const { t } = useLocale()
+const { responseLocale } = useResponseLocale()
 
 const streamRef = ref<HTMLElement | null>(null)
 
@@ -331,7 +335,10 @@ const form = reactive({
 
 const handleGenerate = async () => {
   if (!form.rawInput || loading.value) return
-  await generate({ ...form })
+  await generate({ 
+    ...form,
+    responseLanguage: responseLocale.value
+  })
 }
 
 const autoResize = (event: Event) => {

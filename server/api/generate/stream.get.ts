@@ -130,6 +130,7 @@ export default defineEventHandler(async (event) => {
   const mode = query.mode as string;
   const persona = query.persona as string;
   const compressToMvp = query.compressToMvp === 'true';
+  const responseLanguage = (query.responseLanguage as string) || 'en';
 
   if (!rawInput || rawInput.trim().length === 0) {
     throw createError({ statusCode: 400, statusMessage: 'Input cannot be empty' });
@@ -170,6 +171,7 @@ export default defineEventHandler(async (event) => {
 INPUT_MODE: ${mode}
 INPUT_PERSONA: ${persona}
 COMPRESS_TO_MVP: ${compressToMvp}
+OUTPUT_LANGUAGE: ${responseLanguage}
 
 RAW_IDEA:
 ${rawInput}

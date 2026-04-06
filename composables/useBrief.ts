@@ -157,6 +157,7 @@ export const useBrief = () => {
     const userPrompt = `INPUT_MODE: ${params.mode}
 INPUT_PERSONA: ${params.persona}
 COMPRESS_TO_MVP: ${params.compressToMvp}
+OUTPUT_LANGUAGE: ${params.responseLanguage}
 
 RAW_IDEA:
 ${params.rawInput}`
@@ -200,6 +201,7 @@ ${params.rawInput}`
         mode: params.mode,
         persona: params.persona,
         compressToMvp: String(params.compressToMvp),
+        responseLanguage: params.responseLanguage,
       })
 
       // Если за 4 секунды соединение не открылось — считаем что сервера нет

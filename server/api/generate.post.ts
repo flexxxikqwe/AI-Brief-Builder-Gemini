@@ -151,7 +151,7 @@ export default defineEventHandler(async (event) => {
   }
 
   const body = await readBody(event);
-  const { rawInput, mode, persona, compressToMvp } = body;
+  const { rawInput, mode, persona, compressToMvp, responseLanguage = 'en' } = body;
 
   if (!rawInput || rawInput.trim().length === 0) {
     throw createError({
@@ -171,6 +171,7 @@ export default defineEventHandler(async (event) => {
 INPUT_MODE: ${mode}
 INPUT_PERSONA: ${persona}  
 COMPRESS_TO_MVP: ${compressToMvp}
+OUTPUT_LANGUAGE: ${responseLanguage}
 
 RAW_IDEA:
 ${rawInput}

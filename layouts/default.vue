@@ -1,37 +1,23 @@
 <template>
   <div class="min-h-screen flex flex-col">
-    <header class="bg-white border-b border-gray-200 sticky top-0 z-10">
+    <header class="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 sticky top-0 z-10 transition-colors">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
         <div class="flex items-center gap-2">
           <div class="w-8 h-8 bg-violet-600 rounded-lg flex items-center justify-center">
             <Sparkles class="w-5 h-5 text-white" />
           </div>
-          <h1 class="text-xl font-bold text-gray-900 tracking-tight">AI Brief Builder</h1>
+          <h1 class="text-xl font-bold text-gray-900 dark:text-white tracking-tight">AI Brief Builder</h1>
         </div>
         
-        <div class="flex items-center gap-4">
-          <!-- Response Language -->
-          <div class="hidden sm:flex items-center gap-2 px-2 py-1 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-100 dark:border-gray-700">
-            <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">{{ t('response-lang-label') }}</span>
-            <button 
-              @click="toggleResponseLocale"
-              class="text-xs font-bold transition-colors"
-              :class="responseLocale === 'en' ? 'text-violet-600' : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-300'"
-            >EN</button>
-            <span class="text-gray-300 dark:text-gray-600">|</span>
-            <button 
-              @click="toggleResponseLocale"
-              class="text-xs font-bold transition-colors"
-              :class="responseLocale === 'ru' ? 'text-violet-600' : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-300'"
-            >RU</button>
-          </div>
-
-          <!-- UI Locale -->
+        <div class="flex items-center gap-3">
+          <!-- Single Language Switcher -->
           <button 
             @click="toggleLocale"
-            class="w-9 h-9 flex items-center justify-center rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 transition-all text-xs font-bold text-gray-600 dark:text-gray-300"
+            class="h-9 px-3 flex items-center gap-2 rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 transition-all text-xs font-bold text-gray-600 dark:text-gray-300"
           >
-            {{ locale.toUpperCase() }}
+            <span :class="{ 'text-violet-600': locale === 'en' }">EN</span>
+            <span class="text-gray-300 dark:text-gray-600">|</span>
+            <span :class="{ 'text-violet-600': locale === 'ru' }">RU</span>
           </button>
 
           <!-- Theme Toggle -->
@@ -78,9 +64,7 @@
 import { Sparkles, Sun, Moon } from 'lucide-vue-next'
 import { useTheme } from '~/composables/useTheme'
 import { useLocale } from '~/composables/useLocale'
-import { useResponseLocale } from '~/composables/useResponseLocale'
 
 const { theme, toggleTheme } = useTheme()
 const { locale, t, toggleLocale } = useLocale()
-const { responseLocale, toggleResponseLocale } = useResponseLocale()
 </script>

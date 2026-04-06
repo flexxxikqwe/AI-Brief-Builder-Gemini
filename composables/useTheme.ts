@@ -27,10 +27,12 @@ export const useTheme = () => {
       const saved = localStorage.getItem('theme') as Theme | null
       if (saved && (saved === 'light' || saved === 'dark')) {
         theme.value = saved
-      } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-        theme.value = 'dark'
+      } else {
+        theme.value = 'light'
       }
-    } catch (e) {}
+    } catch (e) {
+      theme.value = 'light'
+    }
     applyTheme(theme.value)
   })
 

@@ -77,12 +77,12 @@
               </template>
             </button>
 
-            <div v-if="error" class="bg-red-50 border border-red-200 p-4 rounded-lg flex items-start justify-between">
-              <div class="flex items-center gap-2 text-red-700">
+            <div v-if="error" class="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 p-4 rounded-lg flex items-start justify-between">
+              <div class="flex items-center gap-2 text-red-700 dark:text-red-400">
                 <AlertCircle class="w-5 h-5 flex-shrink-0" />
                 <span class="text-sm">{{ error }}</span>
               </div>
-              <button @click="clearError" class="text-red-400 hover:text-red-500">
+              <button @click="clearError" class="text-red-400 dark:text-red-500 hover:text-red-500 dark:hover:text-red-400">
                 <X class="w-5 h-5" />
               </button>
             </div>
@@ -310,11 +310,9 @@ import {
 import { useBrief } from '~/composables/useBrief'
 import type { GenerationMode, GenerationPersona } from '~/types/brief'
 import { useLocale } from '~/composables/useLocale'
-import { useResponseLocale } from '~/composables/useResponseLocale'
 
 const { loading, error, result, history, streamingText, generate, clearError, restoreFromHistory } = useBrief()
-const { t } = useLocale()
-const { responseLocale } = useResponseLocale()
+const { locale, t } = useLocale()
 
 const streamRef = ref<HTMLElement | null>(null)
 
@@ -337,7 +335,7 @@ const handleGenerate = async () => {
   if (!form.rawInput || loading.value) return
   await generate({ 
     ...form,
-    responseLanguage: responseLocale.value
+    responseLanguage: locale.value
   })
 }
 

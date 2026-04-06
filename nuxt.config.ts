@@ -3,6 +3,11 @@ export default defineNuxtConfig({
   devtools: { enabled: false },
   modules: ['@pinia/nuxt', '@nuxtjs/tailwindcss'],
   css: ['~/assets/css/main.css'],
+  tailwindcss: {
+    config: {
+      darkMode: 'class'
+    }
+  },
   typescript: {
     strict: true
   },

@@ -1,7 +1,7 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   devtools: { enabled: false },
-  modules: ['@pinia/nuxt', '@nuxtjs/tailwindcss'],
+  modules: ['@nuxtjs/tailwindcss'],
   css: ['~/assets/css/main.css'],
   tailwindcss: {
     config: {
@@ -17,10 +17,10 @@ export default defineNuxtConfig({
     }
   },
   runtimeConfig: {
-    geminiApiKey: '',
+    geminiApiKey: '', // NUXT_GEMINI_API_KEY
     public: {
       apiBase: '/api',
-      geminiApiKey: '' // Will be overridden by NUXT_PUBLIC_GEMINI_API_KEY in runtime
+      geminiApiKey: '' // NUXT_PUBLIC_GEMINI_API_KEY
     }
   },
   vite: {
@@ -28,11 +28,10 @@ export default defineNuxtConfig({
       'import.meta.env.VITE_GEMINI_API_KEY': 
         JSON.stringify(
           [
-            process.env.API_KEY,
-            process.env.VITE_GEMINI_API_KEY,
+            process.env.NUXT_PUBLIC_GEMINI_API_KEY,
             process.env.GEMINI_API_KEY,
-            process.env.NUXT_PUBLIC_GEMINI_API_KEY
-          ].find(key => key && key !== 'GEMINI_API_KEY' && key !== 'TODO_KEYHERE' && key !== 'MY_GEMINI_API_KEY') || ''
+            process.env.API_KEY
+          ].find(key => key && key !== 'GEMINI_API_KEY' && key !== 'TODO_KEYHERE') || ''
         )
     }
   }

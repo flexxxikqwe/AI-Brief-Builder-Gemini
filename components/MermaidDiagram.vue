@@ -1,9 +1,9 @@
 <template>
-  <div class="mermaid-container bg-gray-50 dark:bg-gray-800/50 rounded-lg p-4 overflow-x-auto transition-colors">
+  <div class="mermaid-container bg-gray-50 dark:bg-zinc-800/50 rounded-lg p-4 overflow-x-auto transition-colors">
     <div v-if="rendering" class="flex items-center justify-center h-48">
       <div class="animate-pulse flex flex-col items-center gap-2">
-        <div class="h-4 w-32 bg-gray-200 dark:bg-gray-700 rounded"></div>
-        <div class="h-4 w-48 bg-gray-200 dark:bg-gray-700 rounded"></div>
+        <div class="h-4 w-32 bg-gray-200 dark:bg-zinc-700 rounded"></div>
+        <div class="h-4 w-48 bg-gray-200 dark:bg-zinc-700 rounded"></div>
       </div>
     </div>
     
@@ -20,7 +20,7 @@
       >
         {{ showRaw ? 'Hide raw' : 'Show raw' }}
       </button>
-      <pre v-if="showRaw" class="text-xs bg-gray-100 dark:bg-gray-800 p-4 rounded w-full overflow-x-auto text-gray-700 dark:text-gray-300">{{ diagram }}</pre>
+      <pre v-if="showRaw" class="text-xs bg-gray-100 dark:bg-zinc-800 p-4 rounded w-full overflow-x-auto text-gray-700 dark:text-zinc-300">{{ diagram }}</pre>
     </div>
   </div>
 </template>

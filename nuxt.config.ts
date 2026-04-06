@@ -28,6 +28,7 @@ export default defineNuxtConfig({
       'import.meta.env.VITE_GEMINI_API_KEY': 
         JSON.stringify(
           [
+            process.env.NEXT_PUBLIC_GEMINI_API_KEY,
             process.env.NUXT_PUBLIC_GEMINI_API_KEY,
             process.env.GEMINI_API_KEY,
             process.env.API_KEY

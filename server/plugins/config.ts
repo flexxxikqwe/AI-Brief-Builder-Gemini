@@ -4,10 +4,11 @@ export default defineNitroPlugin((nitroApp) => {
 
   // Читаем ключ напрямую из process.env в рантайме
   const apiKey = [
-    process.env.API_KEY,
-    process.env.GEMINI_API_KEY,
+    process.env.NEXT_PUBLIC_GEMINI_API_KEY,
+    process.env.NUXT_PUBLIC_GEMINI_API_KEY,
     process.env.NUXT_GEMINI_API_KEY,
-    process.env.NUXT_PUBLIC_GEMINI_API_KEY
+    process.env.GEMINI_API_KEY,
+    process.env.API_KEY
   ].find(key => !isPlaceholder(key)) || '';
   
   // Сохраняем в глобальную переменную для доступа из эндпоинтов

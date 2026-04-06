@@ -113,10 +113,11 @@ export default defineEventHandler(async (event) => {
   const apiKey = [
     // @ts-ignore
     globalThis._GEMINI_API_KEY,
-    process.env.API_KEY,
-    process.env.GEMINI_API_KEY,
+    process.env.NEXT_PUBLIC_GEMINI_API_KEY,
+    process.env.NUXT_PUBLIC_GEMINI_API_KEY,
     process.env.NUXT_GEMINI_API_KEY,
-    process.env.NUXT_PUBLIC_GEMINI_API_KEY
+    process.env.GEMINI_API_KEY,
+    process.env.API_KEY
   ].find(key => !isPlaceholder(key)) || '';
 
   if (!apiKey) {
